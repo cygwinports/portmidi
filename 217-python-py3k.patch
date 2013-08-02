@@ -1,0 +1,29 @@
+--- origsrc/portmidi/pm_python/setup.py	2013-08-01 21:38:03.983924800 -0500
++++ src/portmidi/pm_python/setup.py	2013-08-01 21:51:22.701608800 -0500
+@@ -140,7 +140,7 @@ PACKAGEDATA.update(EXTRAS)
+ 
+ 
+ if sys.platform == 'win32':
+-    print "Found Win32 platform"
++    print("Found Win32 platform")
+     EXTENSION = dict(
+         ext_modules=[ 
+             Extension("pyportmidi._pyportmidi", [os.path.join("pyportmidi", "_pyportmidi.pyx")],
+@@ -164,7 +164,7 @@ elif sys.platform == 'cygwin':
+        
+     )
+ elif sys.platform == 'darwin':
+-    print "Found darwin (OS X) platform"
++    print("Found darwin (OS X) platform")
+     library_dirs = ["/usr/local/lib"]
+     include_dirs = ["/usr/local/include"]
+     EXTENSION = dict(
+@@ -179,7 +179,7 @@ elif sys.platform == 'darwin':
+         ]
+     )
+ else:
+-    print "Assuming Linux platform"
++    print("Assuming Linux platform")
+     EXTENSION = dict(
+         ext_modules=[ 
+             Extension("pyportmidi._pyportmidi", [os.path.join("pyportmidi", "_pyportmidi.pyx")],

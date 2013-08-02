@@ -1,0 +1,28 @@
+--- origsrc/portmidi/pm_common/CMakeLists.txt	2010-09-20 14:57:48.000000000 -0500
++++ src/portmidi/pm_common/CMakeLists.txt	2013-08-01 18:24:05.068216900 -0500
+@@ -65,6 +65,11 @@ if(UNIX)
+     set(JAVAVM_LIB "${FRAMEWORK_PATH}/JavaVM.framework")
+     set(JAVA_INCLUDE_PATHS ${JAVAVM_LIB}/Headers)
+     message(STATUS "SYSROOT: " ${CMAKE_OSX_SYSROOT})
++  elseif(CYGWIN)
++    set(WINSRC pmwin pmwinmm)
++    prepend_path(LIBSRC ../pm_win/ ${WINSRC})
++    list(APPEND LIBSRC ../porttime/ptwinmm)
++    set(PM_NEEDED_LIBS winmm)
+   else(APPLE)
+     # LINUX settings...
+     include(FindJNI)
+--- origsrc/portmidi/pm_dylib/CMakeLists.txt	2009-11-19 23:41:09.000000000 -0600
++++ src/portmidi/pm_dylib/CMakeLists.txt	2013-08-01 18:19:30.615519100 -0500
+@@ -61,6 +61,11 @@ if(UNIX)
+     set(JAVA_INCLUDE_PATHS ${JAVAVM_LIB}/Headers)
+     set(INSTALL_NAME_DIR "/usr/local/lib")
+     message(STATUS "SYSROOT: " ${CMAKE_OSX_SYSROOT})
++  elseif(CYGWIN)
++    set(WINSRC pmwin pmwinmm)
++    prepend_path(LIBSRC ../pm_win/ ${WINSRC})
++    list(APPEND LIBSRC ../porttime/ptwinmm)
++    set(PM_NEEDED_LIBS winmm)
+   else(APPLE)
+     # LINUX settings...
+     include(FindJNI)

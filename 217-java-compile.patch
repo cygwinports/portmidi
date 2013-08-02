@@ -1,0 +1,28 @@
+--- origsrc/portmidi/pm_java/CMakeLists.txt	2013-08-01 21:38:02.573844100 -0500
++++ src/portmidi/pm_java/CMakeLists.txt	2013-08-01 21:48:50.402897800 -0500
+@@ -16,12 +16,12 @@ if(UNIX)
+         COMMAND javac -classpath . pmdefaults/PmDefaultsFrame.java
+ 	MAIN_DEPENDENCY pmdefaults/PmDefaultsFrame.java
+ 	DEPENDS pmdefaults/PmDefaults.java
+-	WORKING_DIRECTORY pm_java)
++	)
+     add_custom_command(OUTPUT pmdefaults/PmDefaults.class
+         COMMAND javac -classpath . pmdefaults/PmDefaults.java
+ 	MAIN_DEPENDENCY pmdefaults/PmDefaults.java
+ 	DEPENDS pmdefaults/PmDefaultsFrame.java
+-	WORKING_DIRECTORY pm_java)
++	)
+     add_custom_command(OUTPUT ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/pmdefaults.jar
+         COMMAND	cp pmdefaults/portmusic_logo.png .
+         COMMAND	jar cmf pmdefaults/manifest.txt pmdefaults.jar
+@@ -31,8 +31,8 @@ if(UNIX)
+ 	COMMAND mv pmdefaults.jar ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+ 	COMMAND rm portmusic_logo.png
+ 	MAIN_DEPENDENCY pmdefaults/PmDefaults.class
+-	DEPENDS ${PMDEFAULTS_ALL_CLASSES}
+-	WORKING_DIRECTORY pm_java)
++	DEPENDS pmdefaults/PmDefaultsFrame.class
++	)
+     add_custom_target(pmdefaults_target ALL 
+         DEPENDS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/pmdefaults.jar)
+     # message(STATUS "add_custom_target: pmdefaults.jar")

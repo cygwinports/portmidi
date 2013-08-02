@@ -1,0 +1,50 @@
+--- origsrc/portmidi/pm_common/CMakeLists.txt	2010-09-20 14:57:48.000000000 -0500
++++ src/portmidi/pm_common/CMakeLists.txt	2013-08-01 18:24:05.068216900 -0500
+@@ -113,15 +118,15 @@ target_link_libraries(portmidi-static ${
+ include_directories(${JAVA_INCLUDE_PATHS})
+ 
+ set(JNISRC ${LIBSRC} ../pm_java/pmjni/pmjni.c)
+-add_library(pmjni SHARED ${JNISRC})
++add_library(pmjni MODULE ${JNISRC})
+ target_link_libraries(pmjni ${JNI_EXTRA_LIBS})
+ set_target_properties(pmjni PROPERTIES EXECUTABLE_EXTENSION "jnilib")
+ 
+ # install the libraries (Linux and Mac OS X command line)
+ if(UNIX)
+   INSTALL(TARGETS portmidi-static pmjni
+-    LIBRARY DESTINATION /usr/local/lib
+-    ARCHIVE DESTINATION /usr/local/lib)
++    LIBRARY DESTINATION lib/portmidi
++    ARCHIVE DESTINATION lib)
+ # .h files installed by pm_dylib/CMakeLists.txt, so don't need them here
+ #  INSTALL(FILES portmidi.h ../porttime/porttime.h
+ #    DESTINATION /usr/local/include)
+--- origsrc/portmidi/pm_dylib/CMakeLists.txt	2009-11-19 23:41:09.000000000 -0600
++++ src/portmidi/pm_dylib/CMakeLists.txt	2013-08-01 18:19:30.615519100 -0500
+@@ -120,8 +120,9 @@ prepend_path(SHARED_PATHS ../pm_common/
+ # install the libraries (Linux and Mac OS X command line)
+ if(UNIX)
+   INSTALL(TARGETS portmidi-dynamic
+-    LIBRARY DESTINATION /usr/local/lib
+-    ARCHIVE DESTINATION /usr/local/lib)
++    LIBRARY DESTINATION lib
++    RUNTIME DESTINATION bin
++    ARCHIVE DESTINATION lib)
+   INSTALL(FILES ../pm_common/portmidi.h ../porttime/porttime.h
+-    DESTINATION /usr/local/include)
++    DESTINATION include)
+ endif(UNIX)
+--- origsrc/portmidi/pm_java/CMakeLists.txt	2009-11-04 09:20:44.000000000 -0600
++++ src/portmidi/pm_java/CMakeLists.txt	2013-08-01 18:28:24.332045900 -0500
+@@ -39,9 +39,9 @@ if(UNIX)
+ 
+     # install the libraries (Linux only)
+     INSTALL(FILES ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/pmdefaults.jar
+-      DESTINATION /usr/share/java)
++      DESTINATION share/java)
+     INSTALL(PROGRAMS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/pmdefaults
+-      DESTINATION /usr/local/bin)
++      DESTINATION bin)
+   endif(APPLE)
+ endif(UNIX)
+ # In windows, use pm_java/make.bat

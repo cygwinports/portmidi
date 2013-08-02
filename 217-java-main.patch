@@ -1,0 +1,5 @@
+--- origsrc/portmidi/pm_java/pmdefaults/manifest.txt	2009-01-02 11:10:13.000000000 -0600
++++ src/portmidi/pm_java/pmdefaults/manifest.txt	2013-08-01 21:07:13.276070300 -0500
+@@ -1 +1 @@
+-Main-Class: pmdefaults/PmDefaults
++Main-Class: pmdefaults.PmDefaults

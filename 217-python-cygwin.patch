@@ -1,0 +1,21 @@
+--- origsrc/portmidi/pm_python/setup.py	2010-09-26 14:32:44.000000000 -0500
++++ src/portmidi/pm_python/setup.py	2013-08-01 21:22:09.129310200 -0500
+@@ -153,6 +153,18 @@ if sys.platform == 'win32':
+                       extra_compile_args = ["/DWIN32"]) # needed by portmidi.h
+         ]
+     )
++elif sys.platform == 'cygwin':
++    print("Found Cygwin platform")
++    EXTENSION = dict(
++        ext_modules=[ 
++            Extension("pyportmidi._pyportmidi", [os.path.join("pyportmidi", "_pyportmidi.pyx")],
++                      include_dirs = ["../pm_common", "../porttime"],
++                      library_dirs = ["../RelWithDebInfo", "../Release"],
++                      libraries = ["portmidi"]
++                      )
++        ]
++       
++    )
+ elif sys.platform == 'darwin':
+     print "Found darwin (OS X) platform"
+     library_dirs = ["/usr/local/lib"]

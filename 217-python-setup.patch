@@ -1,0 +1,16 @@
+--- origsrc/portmidi/pm_python/setup.py	2010-09-26 14:32:44.000000000 -0500
++++ src/portmidi/pm_python/setup.py	2013-08-01 21:22:09.129310200 -0500
+@@ -15,12 +15,10 @@ except ImportError:
+ 
+ 
+ DESCRIPTION = open('README_PYTHON.txt').read()
+-CHANGES = open('CHANGES.txt').read()
+-TODO = open('TODO.txt').read()
+ 
+ EXTRAS = {}
+ 
+-long_description = DESCRIPTION + CHANGES + TODO
++long_description = DESCRIPTION
+ #import sys
+ #if "checkdocs" in sys.argv:
+ #    print long_description

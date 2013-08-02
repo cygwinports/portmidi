@@ -1,0 +1,11 @@
+--- origsrc/portmidi/pm_dylib/CMakeLists.txt	2009-11-19 23:41:09.000000000 -0600
++++ src/portmidi/pm_dylib/CMakeLists.txt	2013-08-01 18:19:30.615519100 -0500
+@@ -114,7 +114,7 @@ prepend_path(SHARED_PATHS ../pm_common/
+ list(APPEND LIBSRC ${SHARED_PATHS})
+ 
+ add_library(portmidi-dynamic SHARED ${LIBSRC})
+-set_target_properties(portmidi-dynamic PROPERTIES OUTPUT_NAME "portmidi")
++set_target_properties(portmidi-dynamic PROPERTIES SOVERSION 0 OUTPUT_NAME "portmidi")
+ target_link_libraries(portmidi-dynamic ${PM_NEEDED_LIBS})
+ 
+ # install the libraries (Linux and Mac OS X command line)
