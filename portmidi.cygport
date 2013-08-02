@@ -19,6 +19,7 @@ PATCH_URI="
 	217-python-setup.patch
 	217-python-cygwin.patch
 	217-python-py3k.patch
+	217-win64.patch
 "
 
 PKG_NAMES="${NAME}-setup libportmidi0 libportmidi-devel python-pyportmidi python3-pyportmidi"

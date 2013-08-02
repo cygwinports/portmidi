@@ -1,0 +1,241 @@
+The joys of LP64 vs LLP64 (what *were* they thinking, anyway?!?)
+
+--- origsrc/portmidi/pm_win/pmwin.c	2008-12-22 08:11:19.000000000 -0600
++++ src/portmidi/pm_win/pmwin.c	2013-08-02 00:00:00.103018900 -0500
+@@ -62,7 +62,7 @@ static PmDeviceID pm_get_default_device_
+     HKEY hkey;
+ #define PATTERN_MAX 256
+     char pattern[PATTERN_MAX];
+-    long pattern_max = PATTERN_MAX;
++    DWORD pattern_max = PATTERN_MAX;
+     DWORD dwType;
+     /* Find first input or device -- this is the default. */
+     PmDeviceID id = pmNoDevice;
+--- origsrc/portmidi/pm_win/pmwinmm.c	2010-09-20 14:57:48.000000000 -0500
++++ src/portmidi/pm_win/pmwinmm.c	2013-08-02 01:07:38.243131300 -0500
+@@ -38,11 +38,11 @@
+ 
+ /* callback routines */
+ static void CALLBACK winmm_in_callback(HMIDIIN hMidiIn,
+-                                       WORD wMsg, DWORD dwInstance, 
+-                                       DWORD dwParam1, DWORD dwParam2);
++                                       UINT wMsg, DWORD_PTR dwInstance, 
++                                       DWORD_PTR dwParam1, DWORD_PTR dwParam2);
+ static void CALLBACK winmm_streamout_callback(HMIDIOUT hmo, UINT wMsg,
+-                                              DWORD dwInstance, DWORD dwParam1, 
+-                                              DWORD dwParam2);
++                                              DWORD_PTR dwInstance, DWORD_PTR dwParam1, 
++                                              DWORD_PTR dwParam2);
+ #ifdef USE_SYSEX_BUFFERS
+ static void CALLBACK winmm_out_callback(HMIDIOUT hmo, UINT wMsg,
+                                         DWORD dwInstance, DWORD dwParam1, 
+@@ -94,7 +94,7 @@ The following constants help to represen
+ #define EXPANSION_BUFFER_LEN 1024
+ 
+ /* A sysex buffer has 3 DWORDS as a header plus the actual message size */
+-#define MIDIHDR_SYSEX_BUFFER_LENGTH(x) ((x) + sizeof(long)*3)
++#define MIDIHDR_SYSEX_BUFFER_LENGTH(x) ((x) + sizeof(LONG)*3)
+ /* A MIDIHDR with a sysex message is the buffer length plus the header size */
+ #define MIDIHDR_SYSEX_SIZE(x) (MIDIHDR_SYSEX_BUFFER_LENGTH(x) + sizeof(MIDIHDR))
+ #ifdef USE_SYSEX_BUFFERS
+@@ -140,14 +140,14 @@ typedef struct midiwinmm_struct {
+     LPMIDIHDR sysex_buffers[NUM_SYSEX_BUFFERS]; /* pool of buffers for sysex data */
+     int next_sysex_buffer;      /* index of next sysexbuffer to send */
+ #endif
+-    unsigned long last_time;    /* last output time */
++    ULONG last_time;    /* last output time */
+     int first_message;          /* flag: treat first message differently */
+     int sysex_mode;             /* middle of sending sysex */
+-    unsigned long sysex_word;   /* accumulate data when receiving sysex */
++    ULONG sysex_word;   /* accumulate data when receiving sysex */
+     unsigned int sysex_byte_count; /* count how many received */
+     LPMIDIHDR hdr;              /* the message accumulating sysex to send */
+-    unsigned long sync_time;    /* when did we last determine delta? */
+-    long delta;                 /* difference between stream time and
++    ULONG sync_time;    /* when did we last determine delta? */
++    LONG delta;                 /* difference between stream time and
+                                        real time */
+     int error;                  /* host error from doing port midi call */
+     CRITICAL_SECTION lock;      /* prevents reentrant callbacks (input only) */
+@@ -305,7 +305,7 @@ static void winmm_get_host_error(PmInter
+ buffer handling
+ =============================================================================
+ */
+-static MIDIHDR *allocate_buffer(long data_size)
++static MIDIHDR *allocate_buffer(LONG data_size)
+ {
+     LPMIDIHDR hdr = (LPMIDIHDR) pm_alloc(MIDIHDR_SYSEX_SIZE(data_size));
+     MIDIEVENT *evt;
+@@ -320,7 +320,7 @@ static MIDIHDR *allocate_buffer(long dat
+ }
+ 
+ #ifdef USE_SYSEX_BUFFERS
+-static MIDIHDR *allocate_sysex_buffer(long data_size)
++static MIDIHDR *allocate_sysex_buffer(LONG data_size)
+ {
+     /* we're actually allocating more than data_size because the buffer 
+      * will include the MIDIEVENT header in addition to the data 
+@@ -336,7 +336,7 @@ static MIDIHDR *allocate_sysex_buffer(lo
+ }
+ #endif
+ 
+-static PmError allocate_buffers(midiwinmm_type m, long data_size, long count)
++static PmError allocate_buffers(midiwinmm_type m, LONG data_size, LONG count)
+ {
+     int i;
+     /* buffers is an array of count pointers to MIDIHDR/MIDIEVENT struct */
+@@ -359,7 +359,7 @@ static PmError allocate_buffers(midiwinm
+ }
+ 
+ #ifdef USE_SYSEX_BUFFERS
+-static PmError allocate_sysex_buffers(midiwinmm_type m, long data_size)
++static PmError allocate_sysex_buffers(midiwinmm_type m, LONG data_size)
+ {
+     PmError rslt = pmNoError;
+     /* sysex_buffers is an array of count pointers to MIDIHDR/MIDIEVENT struct */
+@@ -476,7 +476,7 @@ found_buffer:
+ #ifdef EXPANDING_SYSEX_BUFFERS
+ note: this is not working code, but might be useful if you want
+       to grow sysex buffers.
+-static PmError resize_sysex_buffer(PmInternal *midi, long old_size, long new_size)
++static PmError resize_sysex_buffer(PmInternal *midi, LONG old_size, LONG new_size)
+ {
+     LPMIDIHDR big;
+     int i;
+@@ -526,7 +526,7 @@ begin midi input implementation
+ */
+ 
+ 
+-static PmError allocate_input_buffer(HMIDIIN h, long buffer_len)
++static PmError allocate_input_buffer(HMIDIIN h, LONG buffer_len)
+ {
+     LPMIDIHDR hdr = allocate_buffer(buffer_len);
+     if (!hdr) return pmInsufficientMemory;
+@@ -664,12 +664,12 @@ static PmError winmm_in_close(PmInternal
+ 
+ 
+ /* Callback function executed via midiInput SW interrupt (via midiInOpen). */
+-static void FAR PASCAL winmm_in_callback(
++static void CALLBACK winmm_in_callback(
+     HMIDIIN hMidiIn,    /* midiInput device Handle */
+-    WORD wMsg,          /* midi msg */
+-    DWORD dwInstance,   /* application data */
+-    DWORD dwParam1,     /* MIDI data */
+-    DWORD dwParam2)    /* device timestamp (wrt most recent midiInStart) */
++    UINT wMsg,          /* midi msg */
++    DWORD_PTR dwInstance,   /* application data */
++    DWORD_PTR dwParam1,     /* MIDI data */
++    DWORD_PTR dwParam2)    /* device timestamp (wrt most recent midiInStart) */
+ {
+     static int entry = 0;
+     PmInternal *midi = (PmInternal *) dwInstance;
+@@ -688,7 +688,7 @@ static void FAR PASCAL winmm_in_callback
+          * hardware interrupt? -- but I've seen reentrant behavior 
+          * using a debugger, so it happens.
+          */
+-        long new_driver_time;
++        LONG new_driver_time;
+         EnterCriticalSection(&m->lock);
+ 
+         /* dwParam1 is MIDI data received, packed into DWORD w/ 1st byte of
+@@ -788,18 +788,18 @@ begin midi output implementation
+ 
+ /* add_to_buffer -- adds timestamped short msg to buffer, returns fullp */
+ static int add_to_buffer(midiwinmm_type m, LPMIDIHDR hdr,
+-                         unsigned long delta, unsigned long msg)
++                         ULONG delta, ULONG msg)
+ {
+-    unsigned long *ptr = (unsigned long *)
++    ULONG *ptr = (ULONG *)
+                          (hdr->lpData + hdr->dwBytesRecorded);
+     *ptr++ = delta; /* dwDeltaTime */
+     *ptr++ = 0;     /* dwStream */
+     *ptr++ = msg;   /* dwEvent */
+-    hdr->dwBytesRecorded += 3 * sizeof(long);
++    hdr->dwBytesRecorded += 3 * sizeof(LONG);
+     /* if the addition of three more words (a message) would extend beyond
+        the buffer length, then return TRUE (full)
+      */
+-    return hdr->dwBytesRecorded + 3 * sizeof(long) > hdr->dwBufferLength;
++    return hdr->dwBytesRecorded + 3 * sizeof(LONG) > hdr->dwBufferLength;
+ }
+ 
+ 
+@@ -891,7 +891,7 @@ static PmError winmm_out_open(PmInternal
+         if (output_buffer_len < MIN_SIMPLE_SYSEX_LEN)
+             output_buffer_len = MIN_SIMPLE_SYSEX_LEN;
+     } else {
+-        long dur = 0;
++        LONG dur = 0;
+         num_buffers = max(midi->buffer_len, midi->latency / 2);
+         if (num_buffers < MIN_STREAM_BUFFERS)
+             num_buffers = MIN_STREAM_BUFFERS;
+@@ -1116,8 +1116,8 @@ static PmError winmm_write_short(PmInter
+         m->error = midiOutShortMsg(m->handle.out, event->message);
+         if (m->error) rslt = pmHostError;
+     } else {  /* use midiStream interface -- pass data through buffers */
+-        unsigned long when = event->timestamp;
+-        unsigned long delta;
++        ULONG when = event->timestamp;
++        ULONG delta;
+         int full;
+         if (when == 0) when = midi->now;
+         /* when is in real_time; translate to intended stream time */
+@@ -1186,7 +1186,7 @@ static PmError winmm_end_sysex(PmInterna
+         /* add bytes recorded to MIDIEVENT length, but don't
+            count the MIDIEVENT data (3 longs) */
+         MIDIEVENT *evt = (MIDIEVENT *) (hdr->lpData);
+-        evt->dwEvent += hdr->dwBytesRecorded - 3 * sizeof(long);
++        evt->dwEvent += hdr->dwBytesRecorded - 3 * sizeof(LONG);
+         /* round up BytesRecorded to multiple of 4 */
+         hdr->dwBytesRecorded = (hdr->dwBytesRecorded + 3) & ~3;
+     }
+@@ -1216,9 +1216,9 @@ static PmError winmm_write_byte(PmIntern
+          * MIDI YOKE driver happy -- therefore dwBufferLength - 2 */
+         midi->fill_length = hdr->dwBufferLength - 2;
+         if (midi->latency != 0) {
+-            unsigned long when = (unsigned long) timestamp;
+-            unsigned long delta;
+-            unsigned long *ptr;
++            ULONG when = (ULONG) timestamp;
++            ULONG delta;
++            ULONG *ptr;
+             if (when == 0) when = midi->now;
+             /* when is in real_time; translate to intended stream time */
+             when = when + m->delta + midi->latency;
+@@ -1227,11 +1227,11 @@ static PmError winmm_write_byte(PmIntern
+             delta = when - m->last_time;
+             m->last_time = when;
+ 
+-            ptr = (unsigned long *) hdr->lpData;
++            ptr = (ULONG *) hdr->lpData;
+             *ptr++ = delta;
+             *ptr++ = 0;
+             *ptr = MEVT_F_LONG;
+-            hdr->dwBytesRecorded = 3 * sizeof(long);
++            hdr->dwBytesRecorded = 3 * sizeof(LONG);
+             /* data will be added at an offset of dwBytesRecorded ... */
+         }
+     }
+@@ -1272,9 +1272,9 @@ note: this code is here as an aid in cas
+ static PmTimestamp winmm_synchronize(PmInternal *midi)
+ {
+     midiwinmm_type m;
+-    unsigned long pm_stream_time_2;
+-    unsigned long real_time;
+-    unsigned long pm_stream_time;
++    ULONG pm_stream_time_2;
++    ULONG real_time;
++    ULONG pm_stream_time;
+ 
+     /* only synchronize if we are using stream interface */
+     if (midi->latency == 0) return 0;
+@@ -1328,7 +1328,7 @@ static void CALLBACK winmm_out_callback(
+ 
+ /* winmm_streamout_callback -- unprepare (free) buffer header */
+ static void CALLBACK winmm_streamout_callback(HMIDIOUT hmo, UINT wMsg,
+-        DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
++        DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
+ {
+     PmInternal *midi = (PmInternal *) dwInstance;
+     midiwinmm_type m = (midiwinmm_type) midi->descriptor;
