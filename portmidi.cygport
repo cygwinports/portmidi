@@ -25,6 +25,7 @@ PATCH_URI="
 PKG_NAMES="${NAME}-setup libportmidi0 libportmidi-devel python-pyportmidi python3-pyportmidi"
 portmidi_setup_CATEGORY="Audio"
 portmidi_setup_SUMMARY="PortMIDI Setup GUI"
+portmidi_setup_REQUIRES="jamvm"
 portmidi_setup_CONTENTS="usr/bin/pmdefaults usr/lib/${NAME}/cygpmjni.dll ${JAVA_DIR#/}
                          usr/share/applications/ usr/share/pixmaps/"
 libportmidi0_CONTENTS="usr/bin/cygportmidi-0.dll usr/share/doc/"
