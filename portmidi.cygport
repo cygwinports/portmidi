@@ -2,7 +2,7 @@ inherit cmake java python-distutils python3-distutils
 
 NAME="portmidi"
 VERSION=217
-RELEASE=1
+RELEASE=2
 CATEGORY="Libs"
 SUMMARY="MIDI I/O library"
 DESCRIPTION="PortMidi is a library which supports real-time input and output
