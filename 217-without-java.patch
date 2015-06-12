@@ -1,0 +1,29 @@
+--- origsrc/portmidi/CMakeLists.txt	2010-09-20 15:57:48.000000000 -0500
++++ src/portmidi/CMakeLists.txt	2015-06-11 16:38:04.516479700 -0500
+@@ -73,5 +73,5 @@ add_subdirectory(pm_test)
+ add_subdirectory(pm_dylib)
+ 
+ # Cannot figure out how to make an xcode Java application with CMake
+-add_subdirectory(pm_java)
++#add_subdirectory(pm_java)
+ 
+--- origsrc/portmidi/pm_common/CMakeLists.txt	2015-06-11 16:37:05.473982200 -0500
++++ src/portmidi/pm_common/CMakeLists.txt	2015-06-11 16:41:46.366151000 -0500
+@@ -118,13 +118,13 @@ target_link_libraries(portmidi-static ${
+ include_directories(${JAVA_INCLUDE_PATHS})
+ 
+ set(JNISRC ${LIBSRC} ../pm_java/pmjni/pmjni.c)
+-add_library(pmjni MODULE ${JNISRC})
+-target_link_libraries(pmjni ${JNI_EXTRA_LIBS})
+-set_target_properties(pmjni PROPERTIES EXECUTABLE_EXTENSION "jnilib")
++#add_library(pmjni MODULE ${JNISRC})
++#target_link_libraries(pmjni ${JNI_EXTRA_LIBS})
++#set_target_properties(pmjni PROPERTIES EXECUTABLE_EXTENSION "jnilib")
+ 
+ # install the libraries (Linux and Mac OS X command line)
+ if(UNIX)
+-  INSTALL(TARGETS portmidi-static pmjni
++  INSTALL(TARGETS portmidi-static
+     LIBRARY DESTINATION lib/portmidi
+     ARCHIVE DESTINATION lib)
+ # .h files installed by pm_dylib/CMakeLists.txt, so don't need them here

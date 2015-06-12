@@ -1,8 +1,8 @@
-inherit cmake java python-distutils python3-distutils
+inherit cmake python-distutils python3-distutils # java
 
 NAME="portmidi"
 VERSION=217
-RELEASE=2
+RELEASE=3
 CATEGORY="Libs"
 SUMMARY="MIDI I/O library"
 DESCRIPTION="PortMidi is a library which supports real-time input and output
@@ -20,9 +20,10 @@ PATCH_URI="
 	217-python-cygwin.patch
 	217-python-py3k.patch
 	217-win64.patch
+	217-without-java.patch
 "
 
-PKG_NAMES="${NAME}-setup libportmidi0 libportmidi-devel python-pyportmidi python3-pyportmidi"
+PKG_NAMES="libportmidi0 libportmidi-devel python-pyportmidi python3-pyportmidi" # ${NAME}-setup"
 portmidi_setup_CATEGORY="Audio"
 portmidi_setup_SUMMARY="PortMIDI Setup GUI"
 portmidi_setup_REQUIRES="jamvm"
@@ -60,7 +61,9 @@ src_install() {
 	# remove static library
 	rm -f ${D}/usr/lib/libportmidi_s.a
 
+	if inherited java; then
 	java_wrapper -Djava.library.path=/usr/lib/${NAME} pmdefaults pmdefaults.jar
 	doicon pm_java/pmdefaults/pmdefaults-icon.png
 	make_desktop_entry pmdefaults "PortMIDI Setup" pmdefaults-icon "Settings"
+	fi # java
 }
