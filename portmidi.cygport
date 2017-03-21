@@ -1,8 +1,8 @@
-inherit cmake python-distutils python3-distutils # java
+inherit cmake python2-distutils python3-distutils # java
 
 NAME="portmidi"
 VERSION=217
-RELEASE=3
+RELEASE=4
 CATEGORY="Libs"
 SUMMARY="MIDI I/O library"
 DESCRIPTION="PortMidi is a library which supports real-time input and output
@@ -23,7 +23,7 @@ PATCH_URI="
 	217-without-java.patch
 "
 
-PKG_NAMES="libportmidi0 libportmidi-devel python-pyportmidi python3-pyportmidi" # ${NAME}-setup"
+PKG_NAMES="libportmidi0 libportmidi-devel python2-pyportmidi python3-pyportmidi" # ${NAME}-setup"
 portmidi_setup_CATEGORY="Audio"
 portmidi_setup_SUMMARY="PortMIDI Setup GUI"
 portmidi_setup_REQUIRES="jamvm"
@@ -31,8 +31,9 @@ portmidi_setup_CONTENTS="usr/bin/pmdefaults usr/lib/${NAME}/cygpmjni.dll ${JAVA_
                          usr/share/applications/ usr/share/pixmaps/"
 libportmidi0_CONTENTS="usr/bin/cygportmidi-0.dll usr/share/doc/"
 libportmidi_devel_CONTENTS="usr/include/ usr/lib/lib*"
-python_pyportmidi_CATEGORY="Python"
-python_pyportmidi_CONTENTS="${PYTHON_SITELIB#/}/pyportmidi*"
+python2_pyportmidi_CATEGORY="Python"
+python2_pyportmidi_OBSOLETES="python-pyportmidi"
+python2_pyportmidi_CONTENTS="${PYTHON2_SITELIB#/}/pyportmidi*"
 python3_pyportmidi_CATEGORY="Python"
 python3_pyportmidi_CONTENTS="${PYTHON3_SITELIB#/}/pyportmidi*"
 
@@ -44,7 +45,7 @@ src_compile() {
 	cygmake
 
 	pushd pm_python
-	python_distutils_compile
+	python2_distutils_compile
 	python3_distutils_compile
 	popd
 }
@@ -54,7 +55,7 @@ src_install() {
 	cyginstall
 
 	pushd pm_python
-	python_distutils_install
+	python2_distutils_install
 	python3_distutils_install
 	popd
 
